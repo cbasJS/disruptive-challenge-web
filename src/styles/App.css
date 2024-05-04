@@ -18,3 +18,7 @@ body {
   background-color: var(--background-color);
   color: var(--text-color);
 }
+
+.header-menu {
+  border-bottom: 1px solid #000;
+}

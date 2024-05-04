@@ -16,7 +16,7 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
-    "target": "es2017",
+    "target": "ESNext",
     "types": ["vite/client"]
   },
   "exclude": ["node_modules"],
