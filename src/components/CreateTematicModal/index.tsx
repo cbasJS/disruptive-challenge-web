@@ -1,19 +1,16 @@
 import { Dialog, Transition } from '@headlessui/react';
-import { Fragment, useRef, useState } from 'react';
+import { Fragment } from 'react';
 import { permissionCheckboxes } from '../../utils/constants/index.ts';
 
-const CreateTematicModal = () => {
-  const [open, setOpen] = useState(true);
+type Props = {
+  isVisible: boolean;
+  setOpen: (status: boolean) => void;
+};
 
-  const cancelButtonRef = useRef(null);
-
+const CreateTematicModal: React.FC<Props> = ({ isVisible, setOpen }) => {
   return (
-    <Transition.Root as={Fragment} show={open}>
-      <Dialog
-        className="relative z-10"
-        initialFocus={cancelButtonRef}
-        onClose={setOpen}
-      >
+    <Transition.Root as={Fragment} show={isVisible}>
+      <Dialog className="relative z-10" onClose={setOpen}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -124,7 +121,6 @@ const CreateTematicModal = () => {
                   <button
                     className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
                     onClick={() => setOpen(false)}
-                    ref={cancelButtonRef}
                     type="button"
                   >
                     Cancelar

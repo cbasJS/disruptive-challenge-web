@@ -3,22 +3,33 @@ import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
-const navigation = [
-  { name: 'Crear contenido', to: '/' },
-  // { name: 'Crear categoría', to: '/' },
-  { name: 'Crear temática', to: '/' },
-];
+type Props = {
+  openCreateTematicModal: (status: boolean) => void;
+};
 
-const Header: React.FC = () => {
+const Header: React.FC<Props> = ({ openCreateTematicModal }) => {
   const { pathname } = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const navigation = [
+    {
+      name: 'Crear contenido',
+      onClick: undefined,
+      visible: pathname === '/tematic-collection',
+    },
+    {
+      name: 'Crear temática',
+      onClick: () => openCreateTematicModal(true),
+      visible: true,
+    },
+  ];
 
   if (pathname === '/login' || pathname === '/register') {
     return null;
   }
 
   return (
-    <header className="header-menu absolute inset-x-0 top-0">
+    <header className="header-menu">
       <nav
         aria-label="Global"
         className="header flex items-center justify-between p-6 lg:px-8"
@@ -42,15 +53,18 @@ const Header: React.FC = () => {
           </button>
         </div>
         <div className="hidden lg:flex lg:gap-x-12">
-          {navigation.map((item, index) => (
-            <Link
-              className="text-sm font-semibold leading-6 text-gray-900"
-              key={index}
-              to={item.to}
-            >
-              {item.name}
-            </Link>
-          ))}
+          {navigation.map(
+            (item, index) =>
+              item.visible && (
+                <span
+                  className="cursor-pointer text-sm font-semibold leading-6 text-gray-900"
+                  key={index}
+                  onClick={item.onClick}
+                >
+                  {item.name}
+                </span>
+              ),
+          )}
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
           <Link

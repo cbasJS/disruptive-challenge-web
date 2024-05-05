@@ -1,22 +1,20 @@
-const SearchInput: React.FC = () => {
+type Props = {
+  placeholder: string;
+};
+
+const SearchInput: React.FC<Props> = ({ placeholder }) => {
   return (
-    <div className="mt-14 flex min-h-full flex-1 flex-col justify-center px-6 lg:px-8">
-      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+    <div className="mt-4 flex min-h-full flex-1 flex-col justify-center px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <form action="#" className="space-y-6" method="POST">
           <div>
-            <label
-              className="block text-sm font-medium leading-6 text-gray-900"
-              htmlFor="email"
-            >
-              Buscar temática
-            </label>
             <div className="mt-2">
               <input
                 autoComplete="email"
                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 id="email"
                 name="email"
-                placeholder="Ingresa un título"
+                placeholder={placeholder}
                 required
                 type="email"
               />

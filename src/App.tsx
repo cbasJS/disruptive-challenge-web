@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import CreateTematicModal from './components/CreateTematicModal/index.tsx';
 import Header from './components/Header/index.tsx';
@@ -20,11 +21,20 @@ const App: React.FC = () => {
 };
 
 export const WrappedApp: React.FC = () => {
+  const [isTematicModalVisible, setIsTematicModalVisible] = useState(false);
+
+  const setTematicModalVisible: (status: boolean) => void = (status) => {
+    setIsTematicModalVisible(status);
+  };
+
   return (
     <BrowserRouter>
-      <Header />
+      <Header openCreateTematicModal={setTematicModalVisible} />
       <App />
-      <CreateTematicModal />
+      <CreateTematicModal
+        isVisible={isTematicModalVisible}
+        setOpen={setTematicModalVisible}
+      />
     </BrowserRouter>
   );
 };
