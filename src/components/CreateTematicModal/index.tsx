@@ -67,22 +67,21 @@ const CreateTematicModal: React.FC<Props> = ({ isVisible, setOpen }) => {
     setPermissionCheckboxes(newValue);
   };
 
-  if (mutation.isSuccess) {
-    alert('La tematica se ha creado correctament!');
-    setErrorsOnField('');
-    setErrorServer('');
-    setThumbnail('');
-    setTematicName('');
-    setPermissionCheckboxes(initPermissionCheckboxes);
-    setOpen(false);
-  }
-
   useEffect(() => {
     if (mutation.isError) {
       setErrorServer(mutation.error.response.data.error);
       console.error(mutation.error);
     }
-  }, [mutation]);
+    if (mutation.isSuccess) {
+      alert('La tematica se ha creado correctament!');
+      setErrorsOnField('');
+      setErrorServer('');
+      setThumbnail('');
+      setTematicName('');
+      setPermissionCheckboxes(initPermissionCheckboxes);
+      setOpen(false);
+    }
+  }, [mutation, setOpen]);
 
   return (
     <Transition.Root as={Fragment} show={isVisible}>
