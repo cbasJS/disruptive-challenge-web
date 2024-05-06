@@ -79,6 +79,7 @@ const CreateTematicModal: React.FC<Props> = ({ isVisible, setOpen }) => {
       setThumbnail('');
       setTematicName('');
       setPermissionCheckboxes(initPermissionCheckboxes);
+      mutation.reset();
       setOpen(false);
     }
   }, [mutation, setOpen]);
