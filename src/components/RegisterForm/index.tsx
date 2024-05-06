@@ -1,3 +1,4 @@
+import { useLocalStorage } from '@uidotdev/usehooks';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { typeOfUser } from '../../utils/constants/index.ts';
@@ -13,6 +14,7 @@ const RegisterForm: React.FC<Props> = ({ error, onSubmit }) => {
   const [user, setUser] = useState('');
   const [typeOfUserValue, setTypeOfUserValue] = useState('reader');
   const [fieldsError, setFieldsError] = useState<string | undefined>();
+  const [userLS] = useLocalStorage('user');
 
   const validFields = () => {
     if (!mail) {
@@ -136,13 +138,23 @@ const RegisterForm: React.FC<Props> = ({ error, onSubmit }) => {
         </form>
 
         <p className="mt-10 text-center text-sm text-gray-500">
-          <a
+          <Link
             className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
-            href="#"
+            to="/login"
           >
-            <Link to="/login">Ya tengo cuenta</Link>
-          </a>
+            Ya tengo cuenta
+          </Link>
         </p>
+        {!userLS && (
+          <p className="mt-10 text-center text-sm text-gray-500">
+            <Link
+              className="font-semibold leading-6 text-red-500 hover:text-indigo-500"
+              to="/"
+            >
+              Continuar como invitado
+            </Link>
+          </p>
+        )}
       </div>
     </div>
   );

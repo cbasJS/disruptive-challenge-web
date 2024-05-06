@@ -1,4 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
+import { useLocalStorage } from '@uidotdev/usehooks';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -13,6 +14,7 @@ const Register: React.FC = () => {
       return axios.post(`${process.env.DOMAIN_URL}/api/user`, newUser);
     },
   });
+  const [userLS] = useLocalStorage('user');
 
   const onSubmit: (mail: string, user: string, typeOfUser: string) => void = (
     mail,
@@ -27,7 +29,7 @@ const Register: React.FC = () => {
   };
 
   if (mutation.isSuccess) {
-    alert('El usuario se a creado correctamente!');
+    alert('El usuario se ha creado correctamente!');
     navigate('/login');
   }
 
@@ -36,6 +38,12 @@ const Register: React.FC = () => {
       setError(mutation.error.response.data.error);
     }
   }, [mutation]);
+
+  useEffect(() => {
+    if (userLS && userLS._id) {
+      navigate('/');
+    }
+  }, [userLS, navigate]);
 
   if (mutation.isPending) {
     return <Spinner />;

@@ -11,7 +11,7 @@ export const typeOfUser = [
   },
 ];
 
-export const permissionCheckboxes = [
+export const initPermissionCheckboxes = [
   {
     checked: true,
     description: 'Permitir imagenes',

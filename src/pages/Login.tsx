@@ -47,6 +47,12 @@ const Login: React.FC = () => {
     }
   }, [data, user, setUser, error, navigate]);
 
+  useEffect(() => {
+    if (user && user._id) {
+      navigate('/');
+    }
+  }, [user, navigate]);
+
   if (isPending) {
     return <Spinner />;
   }

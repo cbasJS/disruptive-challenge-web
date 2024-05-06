@@ -1,3 +1,4 @@
+import { useLocalStorage } from '@uidotdev/usehooks';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { validateEmail } from '../../utils/scripts/index.ts';
@@ -11,6 +12,7 @@ const LoginForm: React.FC<Props> = ({ fetchErrorMessage, onSubmit }) => {
   const [mail, setMail] = useState('');
   const [user, setUser] = useState('');
   const [fieldsError, setFieldsError] = useState<string | undefined>();
+  const [userLS] = useLocalStorage('user');
 
   const validFields = () => {
     if (!mail) {
@@ -104,13 +106,23 @@ const LoginForm: React.FC<Props> = ({ fetchErrorMessage, onSubmit }) => {
         </form>
 
         <p className="mt-10 text-center text-sm text-gray-500">
-          <a
+          <Link
             className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
-            href="#"
+            to="/register"
           >
-            <Link to="/register">Crear cuenta</Link>
-          </a>
+            Crear cuenta
+          </Link>
         </p>
+        {!userLS && (
+          <p className="mt-10 text-center text-sm text-gray-500">
+            <Link
+              className="font-semibold leading-6 text-red-500 hover:text-indigo-500"
+              to="/"
+            >
+              Continuar como invitado
+            </Link>
+          </p>
+        )}
       </div>
     </div>
   );

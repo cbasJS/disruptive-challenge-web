@@ -1,6 +1,9 @@
 import { Dialog, Transition } from '@headlessui/react';
-import { Fragment } from 'react';
-import { permissionCheckboxes } from '../../utils/constants/index.ts';
+import { useMutation } from '@tanstack/react-query';
+import { useLocalStorage } from '@uidotdev/usehooks';
+import axios from 'axios';
+import { Fragment, useEffect, useState } from 'react';
+import { initPermissionCheckboxes } from '../../utils/constants/index.ts';
 
 type Props = {
   isVisible: boolean;
@@ -8,6 +11,79 @@ type Props = {
 };
 
 const CreateTematicModal: React.FC<Props> = ({ isVisible, setOpen }) => {
+  const [errorsOnField, setErrorsOnField] = useState('');
+  const [errorServer, setErrorServer] = useState('');
+  const [thumbnail, setThumbnail] = useState('');
+  const [tematicName, setTematicName] = useState('');
+  const [permissionCheckboxes, setPermissionCheckboxes] = useState(
+    initPermissionCheckboxes,
+  );
+  const [userLS] = useLocalStorage('user');
+
+  const mutation = useMutation({
+    mutationFn: (newTematic) => {
+      return axios.post(`${process.env.DOMAIN_URL}/api/tematic`, newTematic);
+    },
+  });
+
+  const validFields = () => {
+    if (!tematicName) {
+      setErrorsOnField('El nombre de la tematica es requerido!');
+      return false;
+    } else if (!thumbnail) {
+      setErrorsOnField('El url de la miniatura es requerido!');
+      return false;
+    }
+    setErrorsOnField('');
+    return true;
+  };
+
+  const handleOnSubmit = () => {
+    if (validFields()) {
+      mutation.mutate({
+        allowImage: permissionCheckboxes[0].checked,
+        allowText: permissionCheckboxes[2].checked,
+        allowVideo: permissionCheckboxes[1].checked,
+        createdInfo: {
+          user: {
+            id: userLS._id,
+            userName: userLS.userName,
+          },
+        },
+        name: tematicName,
+        thumbnailImage: thumbnail,
+      });
+    }
+  };
+
+  const onChangeCheckbox: (value: any) => void = (value) => {
+    console.log(value);
+    const newValue = permissionCheckboxes.map((data) => {
+      if (data.id === value.id) {
+        return value;
+      }
+      return data;
+    });
+    setPermissionCheckboxes(newValue);
+  };
+
+  if (mutation.isSuccess) {
+    alert('La tematica se ha creado correctament!');
+    setErrorsOnField('');
+    setErrorServer('');
+    setThumbnail('');
+    setTematicName('');
+    setPermissionCheckboxes(initPermissionCheckboxes);
+    setOpen(false);
+  }
+
+  useEffect(() => {
+    if (mutation.isError) {
+      setErrorServer(mutation.error.response.data.error);
+      console.error(mutation.error);
+    }
+  }, [mutation]);
+
   return (
     <Transition.Root as={Fragment} show={isVisible}>
       <Dialog className="relative z-10" onClose={setOpen}>
@@ -44,12 +120,7 @@ const CreateTematicModal: React.FC<Props> = ({ isVisible, setOpen }) => {
                       >
                         Crear temática
                       </Dialog.Title>
-                      <Dialog.Description
-                        action="#"
-                        as="form"
-                        className="mt-2 w-full text-left "
-                        method="POST"
-                      >
+                      <Dialog.Description className="mt-2 w-full text-left">
                         <label
                           className="block text-sm font-medium leading-6 text-gray-900"
                           htmlFor="tematic-name"
@@ -62,9 +133,28 @@ const CreateTematicModal: React.FC<Props> = ({ isVisible, setOpen }) => {
                             className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                             id="tematic-name"
                             name="tematic-name"
+                            onChange={(e) => setTematicName(e.target.value)}
                             placeholder="Ingresa el nombre de la tematica"
-                            required
                             type="text"
+                            value={tematicName}
+                          />
+                        </div>
+                        <label
+                          className="mt-4 block text-sm font-medium leading-6 text-gray-900"
+                          htmlFor="thumbnail-name"
+                        >
+                          Url de la miniatura
+                        </label>
+                        <div className="mt-2">
+                          <input
+                            autoComplete="off"
+                            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                            id="thumbnail-name"
+                            name="thumbnail-name"
+                            onChange={(e) => setThumbnail(e.target.value)}
+                            placeholder="Ingresa la url de la miniatura"
+                            type="text"
+                            value={thumbnail}
                           />
                         </div>
                         <label
@@ -86,6 +176,12 @@ const CreateTematicModal: React.FC<Props> = ({ isVisible, setOpen }) => {
                                   className="rounded border-white bg-indigo-600 disabled:pointer-events-none disabled:opacity-50"
                                   id="hs-checkbox-delete"
                                   name="hs-checkbox-delete"
+                                  onChange={(e) =>
+                                    onChangeCheckbox({
+                                      ...data,
+                                      checked: !data.checked,
+                                    })
+                                  }
                                   type="checkbox"
                                 />
                               </div>
@@ -106,6 +202,16 @@ const CreateTematicModal: React.FC<Props> = ({ isVisible, setOpen }) => {
                             </div>
                           ))}
                         </div>
+                        {errorsOnField && (
+                          <p className="mt-4 space-y-3 text-sm text-red-500">
+                            {errorsOnField}
+                          </p>
+                        )}
+                        {errorServer && (
+                          <p className="mt-4 space-y-3 text-sm text-red-500">
+                            {errorServer}
+                          </p>
+                        )}
                       </Dialog.Description>
                     </div>
                   </div>
@@ -113,8 +219,7 @@ const CreateTematicModal: React.FC<Props> = ({ isVisible, setOpen }) => {
                 <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                   <button
                     className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:opacity-75 sm:ml-3 sm:w-auto"
-                    onClick={() => setOpen(false)}
-                    type="button"
+                    onClick={handleOnSubmit}
                   >
                     Aceptar
                   </button>
