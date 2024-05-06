@@ -17,7 +17,7 @@ const Login: React.FC = () => {
   const getUserResponse = () => {
     return axios
       .get(
-        `http://${process.env.DOMAIN_URL}/api/user?userName=${userData.user}&mail=${userData.mail}`,
+        `${process.env.DOMAIN_URL}/api/user?userName=${userData.user}&mail=${userData.mail}`,
       )
       .then((res) => res.data);
   };

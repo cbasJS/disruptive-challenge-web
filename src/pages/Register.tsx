@@ -10,7 +10,7 @@ const Register: React.FC = () => {
   const navigate = useNavigate();
   const mutation = useMutation({
     mutationFn: (newUser) => {
-      return axios.post(`http://${process.env.DOMAIN_URL}/api/user`, newUser);
+      return axios.post(`${process.env.DOMAIN_URL}/api/user`, newUser);
     },
   });
 
