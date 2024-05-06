@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import CreateTematicModal from './components/CreateTematicModal/index.tsx';
@@ -7,6 +8,8 @@ import Login from './pages/Login.tsx';
 import NotFound from './pages/NotFound.tsx';
 import Register from './pages/Register.tsx';
 import TematicCollection from './pages/TematicCollection.tsx';
+
+const queryClient = new QueryClient();
 
 const App: React.FC = () => {
   return (
@@ -29,12 +32,14 @@ export const WrappedApp: React.FC = () => {
 
   return (
     <BrowserRouter>
-      <Header openCreateTematicModal={setTematicModalVisible} />
-      <App />
-      <CreateTematicModal
-        isVisible={isTematicModalVisible}
-        setOpen={setTematicModalVisible}
-      />
+      <QueryClientProvider client={queryClient}>
+        <Header openCreateTematicModal={setTematicModalVisible} />
+        <App />
+        <CreateTematicModal
+          isVisible={isTematicModalVisible}
+          setOpen={setTematicModalVisible}
+        />
+      </QueryClientProvider>
     </BrowserRouter>
   );
 };

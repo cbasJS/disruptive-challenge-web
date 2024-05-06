@@ -1,5 +1,6 @@
 import { Dialog } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { useLocalStorage } from '@uidotdev/usehooks';
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -8,21 +9,27 @@ type Props = {
 };
 
 const Header: React.FC<Props> = ({ openCreateTematicModal }) => {
+  const [user, setUser] = useLocalStorage('user');
   const { pathname } = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const navigation = [
-    {
-      name: 'Crear contenido',
-      onClick: undefined,
-      visible: pathname === '/tematic-collection',
-    },
-    {
-      name: 'Crear temática',
-      onClick: () => openCreateTematicModal(true),
-      visible: true,
-    },
-  ];
+  const navigation = !user
+    ? []
+    : [
+        {
+          name: 'Crear contenido',
+          onClick: undefined,
+          visible:
+            pathname === '/tematic-collection' &&
+            user &&
+            user.typeOfUser === 'creator',
+        },
+        {
+          name: 'Crear temática',
+          onClick: () => openCreateTematicModal(true),
+          visible: user && user.typeOfUser === 'admin',
+        },
+      ];
 
   if (pathname === '/login' || pathname === '/register') {
     return null;
@@ -67,12 +74,27 @@ const Header: React.FC<Props> = ({ openCreateTematicModal }) => {
           )}
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-          <Link
-            className="text-sm font-semibold leading-6 text-gray-900"
-            to="/login"
-          >
-            Login <span aria-hidden="true">&rarr;</span>
-          </Link>
+          {user && user.userName && (
+            <span className="mr-6 block rounded-lg text-base font-semibold text-indigo-600">
+              Bienvenido {user.userName}
+            </span>
+          )}
+          {!user ? (
+            <Link
+              className="text-sm font-semibold leading-6 text-gray-900"
+              to="/login"
+            >
+              Iniciar sesión <span aria-hidden="true">&rarr;</span>
+            </Link>
+          ) : (
+            <Link
+              className="text-sm font-semibold leading-6 text-gray-900"
+              onClick={() => setUser(null)}
+              to="/"
+            >
+              Cerrar sesión <span aria-hidden="true">&rarr;</span>
+            </Link>
+          )}
         </div>
       </nav>
       <Dialog
@@ -96,25 +118,49 @@ const Header: React.FC<Props> = ({ openCreateTematicModal }) => {
           <div className="mt-6 flow-root">
             <div className="-my-6 divide-y divide-gray-500/10">
               <div className="space-y-2 py-6">
-                {navigation.map((item, index) => (
-                  <Link
-                    className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
-                    key={index}
-                    onClick={() => setMobileMenuOpen(false)}
-                    to={item.to}
-                  >
-                    {item.name}
-                  </Link>
-                ))}
+                {user && user.userName && (
+                  <span className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-indigo-600">
+                    Bienvenido {user.userName}
+                  </span>
+                )}
+                {navigation.map(
+                  (item, index) =>
+                    item.visible && (
+                      <span
+                        className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                        key={index}
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          // eslint-disable-next-line no-unused-expressions
+                          item.onClick && item.onClick();
+                        }}
+                      >
+                        {item.name}
+                      </span>
+                    ),
+                )}
               </div>
               <div className="py-6">
-                <Link
-                  className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
-                  onClick={() => setMobileMenuOpen(false)}
-                  to="/login"
-                >
-                  Log in
-                </Link>
+                {!user ? (
+                  <Link
+                    className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                    onClick={() => setMobileMenuOpen(false)}
+                    to="/login"
+                  >
+                    Iniciar sesión
+                  </Link>
+                ) : (
+                  <Link
+                    className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      setUser(null);
+                    }}
+                    to="/"
+                  >
+                    Cerrar sesión
+                  </Link>
+                )}
               </div>
             </div>
           </div>

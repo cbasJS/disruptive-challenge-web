@@ -1,8 +1,8 @@
-# Starter Kit for Vite, React, TypeScript, Tailwind and Node.js ESM
+# Disruptive challange frontend
 
-_Minimal, sensible defaults, fast._
+## Live project link!
 
-Read [the blog post about this template](https://cpojer.net/posts/fastest-frontend-tooling-in-2022).
+[Disruptive challange in live!](https://disruptive-challenge-web.vercel.app/)
 
 ## Technologies
 
